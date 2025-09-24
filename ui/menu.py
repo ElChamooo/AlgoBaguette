@@ -1,25 +1,21 @@
 import pygame
-from game.settings import WINDOW_WIDTH, WINDOW_HEIGHT, WHITE, BLACK, GRAY, DARK_GRAY
-from ui.settings_menu import settings_menu  # Importer le menu des paramètres
+from game.settings import WHITE, BLACK, GRAY, DARK_GRAY
 
-def main_menu():
-    pygame.init()
-    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Snake Game - Menu")
+def main_menu(screen):
     font = pygame.font.Font(None, 36)
 
     running = True
     while running:
         screen.fill(BLACK)
         title = font.render("Snake Game", True, WHITE)
-        title_rect = title.get_rect(center=(WINDOW_WIDTH // 2, 50))
+        title_rect = title.get_rect(center=(screen.get_width() // 2, 50))
         screen.blit(title, title_rect)
 
         # Définir les boutons
         buttons = [
-            {"label": "Play", "rect": pygame.Rect(WINDOW_WIDTH // 2 - 60, 100, 120, 40)},
-            {"label": "Settings", "rect": pygame.Rect(WINDOW_WIDTH // 2 - 60, 160, 120, 40)},
-            {"label": "Exit", "rect": pygame.Rect(WINDOW_WIDTH // 2 - 60, 220, 120, 40)},
+            {"label": "Play", "rect": pygame.Rect(screen.get_width() // 2 - 60, 100, 120, 40)},
+            {"label": "Settings", "rect": pygame.Rect(screen.get_width() // 2 - 60, 160, 120, 40)},
+            {"label": "Exit", "rect": pygame.Rect(screen.get_width() // 2 - 60, 220, 120, 40)},
         ]
 
         # Dessiner les boutons
@@ -47,5 +43,4 @@ def main_menu():
                         elif button["label"] == "Exit":
                             return "exit"
 
-    pygame.quit()
     return "exit"
