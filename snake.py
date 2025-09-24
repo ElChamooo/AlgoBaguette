@@ -8,23 +8,21 @@ WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 CELL_SIZE = 50
 
-# Couleurs
+# colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# Créer la fenêtre
+# Create the window
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Snake Game")
 
 # load textures
 background_texture = pygame.image.load("textures/background2.png")
-background_texture = pygame.transform.scale(background_texture, (CELL_SIZE, CELL_SIZE)) # scale to cell size
+background_texture = pygame.transform.scale(background_texture, (CELL_SIZE, CELL_SIZE))
 apple_texture = pygame.image.load("textures/apple.png")
-apple_texture = pygame.transform.scale(apple_texture, (CELL_SIZE, CELL_SIZE)) # scale to cell size
-
-# Load snake textures
+apple_texture = pygame.transform.scale(apple_texture, (CELL_SIZE, CELL_SIZE))
 snake_head_texture = pygame.image.load("textures/head.png")
 snake_head_texture = pygame.transform.scale(snake_head_texture, (CELL_SIZE, CELL_SIZE))
 snake_eat_texture = pygame.image.load("textures/eat.png")
@@ -63,9 +61,7 @@ def draw_snake(snake, is_eating=False):
         pos_y = y * CELL_SIZE
         
         if i == 0:  # Head
-            # Use eating texture if snake is eating, otherwise normal head
             if is_eating:
-                # Determine head direction for eat texture rotation
                 if len(snake) > 1:
                     head_dir = get_direction(snake[1], snake[0])
                 else:
@@ -84,7 +80,7 @@ def draw_snake(snake, is_eating=False):
                 if len(snake) > 1:
                     head_dir = get_direction(snake[1], snake[0])
                 else:
-                    head_dir = direction
+                    head_dir = 'left'
                 
                 texture = snake_head_texture
                 if head_dir == 'up':
@@ -93,12 +89,11 @@ def draw_snake(snake, is_eating=False):
                     texture = pygame.transform.rotate(snake_head_texture, 90)
                 elif head_dir == 'right':
                     texture = pygame.transform.rotate(snake_head_texture, 180)
-                # left is default orientation
+                # left = default
             
             screen.blit(texture, (pos_x, pos_y))
             
         elif i == len(snake) - 1:  # Tail
-            # Determine tail direction based on previous segment
             tail_dir = get_direction(snake[i], snake[i-1])
             
             texture = snake_tail_texture
@@ -108,39 +103,37 @@ def draw_snake(snake, is_eating=False):
                 texture = pygame.transform.rotate(snake_tail_texture, 90)
             elif tail_dir == 'right':
                 texture = pygame.transform.rotate(snake_tail_texture, 180)
-            # left is default orientation (from left side)
+            # left = default
             
             screen.blit(texture, (pos_x, pos_y))
             
-        else:  # Body segments
-            # Determine directions from previous and to next segment
+        else:  # Body
             from_dir = get_direction(snake[i+1], snake[i])
             to_dir = get_direction(snake[i], snake[i-1])
             
-            # Check if this is a turn segment
             if from_dir != to_dir:
-                # This is a turn segment, use left.png or right.png
+                # turn --> left.png or right.png
                 if (from_dir == 'up' and to_dir == 'right') or (from_dir == 'left' and to_dir == 'down'):
-                    # Bottom to right turn
+                    # Bottom -> right
                     texture = snake_right_texture
                 elif (from_dir == 'up' and to_dir == 'left') or (from_dir == 'right' and to_dir == 'down'):
-                    # Bottom to left turn
+                    # Bottom -> left
                     texture = snake_left_texture
                 elif (from_dir == 'down' and to_dir == 'right') or (from_dir == 'left' and to_dir == 'up'):
-                    # Top to right turn
+                    # Top -> right
                     texture = pygame.transform.rotate(snake_right_texture, 90)
                 elif (from_dir == 'down' and to_dir == 'left') or (from_dir == 'right' and to_dir == 'up'):
-                    # Top to left turn
+                    # Top -> left
                     texture = pygame.transform.rotate(snake_left_texture, -90)
                 else:
                     texture = snake_body_texture
             else:
-                # Straight body segment
+                # Straight
                 texture = snake_body_texture
                 if from_dir in ['up', 'down']:
-                    # Vertical body segment
+                    # Vertical
                     texture = pygame.transform.rotate(snake_body_texture, 90)
-                # horizontal is default orientation
+                # horizontal = default
             
             screen.blit(texture, (pos_x, pos_y))
 
@@ -160,7 +153,6 @@ def generate_apples(grid_width, grid_height, snake, apple_count):
     return apples
 
 def main_game(game_speed, apple_count):
-    # Initialisation du jeu
     grid_width = WINDOW_WIDTH // CELL_SIZE
     grid_height = WINDOW_HEIGHT // CELL_SIZE
     snake = [(5, 5), (4, 5)]
@@ -184,7 +176,6 @@ def main_game(game_speed, apple_count):
                 elif event.key == pygame.K_RIGHT and direction != 'left':
                     direction = 'right'
 
-        # Déplacer le serpent
         head_x, head_y = snake[0]
         if direction == 'up':
             new_head = (head_x, head_y - 1)
@@ -195,7 +186,6 @@ def main_game(game_speed, apple_count):
         elif direction == 'right':
             new_head = (head_x + 1, head_y)
 
-        # Vérifier les collisions
         if new_head in snake or new_head[0] < 0 or new_head[1] < 0 or new_head[0] >= grid_width or new_head[1] >= grid_height:
             print("Game Over!")
             running = False

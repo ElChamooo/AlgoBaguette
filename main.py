@@ -3,8 +3,8 @@ from ui.menu import main_menu
 from ui.settings_menu import settings_menu
 from snake import main_game
 
-# Paramètres globaux
-game_settings = {"game_speed": 5, "apple_count": 1}  # Valeurs par défaut
+# global settings
+game_settings = {"game_speed": 5, "apple_count": 1}  # default values
 
 def main():
     pygame.init()
@@ -14,7 +14,7 @@ def main():
         if action == "play":
             main_game(game_settings["game_speed"], game_settings["apple_count"])
         elif action == "settings":
-            game_settings.update(settings_menu(game_settings))  # Met à jour les paramètres globaux
+            game_settings.update(settings_menu(game_settings))  # Update global settings
         elif action == "exit":
             break
 
