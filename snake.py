@@ -215,5 +215,3 @@ def main_game(game_speed, apple_count):
         pygame.display.flip()
 
         clock.tick(game_speed)
-
-pygame.quit()
