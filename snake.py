@@ -3,10 +3,10 @@ import random
 
 pygame.init()
 
-# Dimensions de la fenêtre
-WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 200
-CELL_SIZE = 20
+# window dimensions & cell size (can be changed)
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 600
+CELL_SIZE = 50
 
 # Couleurs
 WHITE = (255, 255, 255)
@@ -27,6 +27,8 @@ apple_texture = pygame.transform.scale(apple_texture, (CELL_SIZE, CELL_SIZE)) # 
 # Load snake textures
 snake_head_texture = pygame.image.load("textures/head.png")
 snake_head_texture = pygame.transform.scale(snake_head_texture, (CELL_SIZE, CELL_SIZE))
+snake_eat_texture = pygame.image.load("textures/eat.png")
+snake_eat_texture = pygame.transform.scale(snake_eat_texture, (CELL_SIZE, CELL_SIZE))
 snake_body_texture = pygame.image.load("textures/body.png")
 snake_body_texture = pygame.transform.scale(snake_body_texture, (CELL_SIZE, CELL_SIZE))
 snake_tail_texture = pygame.image.load("textures/end.png")
@@ -52,7 +54,7 @@ def draw_grid():
         for y in range(0, WINDOW_HEIGHT, CELL_SIZE):
             screen.blit(background_texture, (x, y)) # draw bkg texture
 
-def draw_snake(snake):
+def draw_snake(snake, is_eating=False):
     if len(snake) == 0:
         return
     
@@ -61,20 +63,37 @@ def draw_snake(snake):
         pos_y = y * CELL_SIZE
         
         if i == 0:  # Head
-            # Determine head direction based on next segment or current direction
-            if len(snake) > 1:
-                head_dir = get_direction(snake[1], snake[0])
+            # Use eating texture if snake is eating, otherwise normal head
+            if is_eating:
+                # Determine head direction for eat texture rotation
+                if len(snake) > 1:
+                    head_dir = get_direction(snake[1], snake[0])
+                else:
+                    head_dir = direction
+                
+                texture = snake_eat_texture
+                if head_dir == 'up':
+                    texture = pygame.transform.rotate(snake_eat_texture, -90)
+                elif head_dir == 'down':
+                    texture = pygame.transform.rotate(snake_eat_texture, 90)
+                elif head_dir == 'right':
+                    texture = pygame.transform.rotate(snake_eat_texture, 180)
+                # left is default orientation
             else:
-                head_dir = direction  # Use current movement direction if only one segment
-            
-            texture = snake_head_texture
-            if head_dir == 'up':
-                texture = pygame.transform.rotate(snake_head_texture, -90)
-            elif head_dir == 'down':
-                texture = pygame.transform.rotate(snake_head_texture, 90)
-            elif head_dir == 'right':
-                texture = pygame.transform.rotate(snake_head_texture, 180)
-            # right is default orientation (head connects from right side)
+                # Normal head logic
+                if len(snake) > 1:
+                    head_dir = get_direction(snake[1], snake[0])
+                else:
+                    head_dir = direction
+                
+                texture = snake_head_texture
+                if head_dir == 'up':
+                    texture = pygame.transform.rotate(snake_head_texture, -90)
+                elif head_dir == 'down':
+                    texture = pygame.transform.rotate(snake_head_texture, 90)
+                elif head_dir == 'right':
+                    texture = pygame.transform.rotate(snake_head_texture, 180)
+                # left is default orientation
             
             screen.blit(texture, (pos_x, pos_y))
             
@@ -142,6 +161,7 @@ grid_height = WINDOW_HEIGHT // CELL_SIZE
 snake = [(5, 5), (4, 5)]
 direction = 'right'
 apple = generate_apple(grid_width, grid_height, snake)
+is_eating = False  # Flag to track if snake is eating
 
 clock = pygame.time.Clock()
 
@@ -182,14 +202,19 @@ while running:
     snake.insert(0, new_head)
     if new_head == apple:
         apple = generate_apple(grid_width, grid_height, snake)
+        is_eating = True  # Set eating flag when apple is eaten
     else:
         snake.pop()
 
     screen.fill(BLACK)
     draw_grid()
-    draw_snake(snake)
+    draw_snake(snake, is_eating)  # Pass eating flag to draw function
     draw_apple(apple)
     pygame.display.flip()
+    
+    # Reset eating flag after one frame
+    if is_eating:
+        is_eating = False
 
     clock.tick(3)
 
