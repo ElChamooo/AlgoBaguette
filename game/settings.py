@@ -1,5 +1,6 @@
-WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 300
+# Dimensions de la fenêtre
+WINDOW_WIDTH = 1000  # Largeur de la fenêtre
+WINDOW_HEIGHT = 600  # Hauteur de la fenêtre
 
 # Couleurs
 WHITE = (255, 255, 255)

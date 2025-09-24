@@ -159,7 +159,7 @@ def generate_apples(grid_width, grid_height, snake, apple_count):
             apples.append((x, y))
     return apples
 
-def main_game(game_speed, apple_count):
+def main_game(screen, game_speed, apple_count):
     # Initialisation du jeu
     grid_width = WINDOW_WIDTH // CELL_SIZE
     grid_height = WINDOW_HEIGHT // CELL_SIZE
