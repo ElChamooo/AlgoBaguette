@@ -52,11 +52,7 @@ clock = pygame.time.Clock()
 
 running = True
 while running:
-    screen.fill(BLACK)
-    draw_grid()
-    draw_snake(snake)
-    draw_apple(apple)
-    pygame.display.flip()
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -93,6 +89,12 @@ while running:
         apple = generate_apple(grid_width, grid_height, snake)
     else:
         snake.pop()
+
+    screen.fill(BLACK)
+    draw_grid()
+    draw_snake(snake)
+    draw_apple(apple)
+    pygame.display.flip()
 
     clock.tick(3)
 
