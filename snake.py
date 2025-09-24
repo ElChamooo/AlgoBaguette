@@ -144,78 +144,76 @@ def draw_snake(snake, is_eating=False):
             
             screen.blit(texture, (pos_x, pos_y))
 
-def draw_apple(apple):
-    x, y = apple
-    screen.blit(apple_texture, (x * CELL_SIZE, y * CELL_SIZE))
+def draw_apples(apples):
+    for apple in apples:
+        x, y = apple
+        rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(screen, RED, rect)
 
-def generate_apple(grid_width, grid_height, snake):
-    while True:
+def generate_apples(grid_width, grid_height, snake, apple_count):
+    apples = []
+    while len(apples) < apple_count:
         x = random.randint(0, grid_width - 1)
         y = random.randint(0, grid_height - 1)
-        if (x, y) not in snake:
-            return (x, y)
+        if (x, y) not in snake and (x, y) not in apples:
+            apples.append((x, y))
+    return apples
 
-# Initialisation du jeu
-grid_width = WINDOW_WIDTH // CELL_SIZE
-grid_height = WINDOW_HEIGHT // CELL_SIZE
-snake = [(5, 5), (4, 5)]
-direction = 'right'
-apple = generate_apple(grid_width, grid_height, snake)
-is_eating = False  # Flag to track if snake is eating
+def main_game(game_speed, apple_count):
+    # Initialisation du jeu
+    grid_width = WINDOW_WIDTH // CELL_SIZE
+    grid_height = WINDOW_HEIGHT // CELL_SIZE
+    snake = [(5, 5), (4, 5)]
+    direction = 'right'
+    apples = generate_apples(grid_width, grid_height, snake, apple_count)
 
-clock = pygame.time.Clock()
+    clock = pygame.time.Clock()
 
-running = True
-while running:
-    
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP and direction != 'down':
+                    direction = 'up'
+                elif event.key == pygame.K_DOWN and direction != 'up':
+                    direction = 'down'
+                elif event.key == pygame.K_LEFT and direction != 'right':
+                    direction = 'left'
+                elif event.key == pygame.K_RIGHT and direction != 'left':
+                    direction = 'right'
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        # Déplacer le serpent
+        head_x, head_y = snake[0]
+        if direction == 'up':
+            new_head = (head_x, head_y - 1)
+        elif direction == 'down':
+            new_head = (head_x, head_y + 1)
+        elif direction == 'left':
+            new_head = (head_x - 1, head_y)
+        elif direction == 'right':
+            new_head = (head_x + 1, head_y)
+
+        # Vérifier les collisions
+        if new_head in snake or new_head[0] < 0 or new_head[1] < 0 or new_head[0] >= grid_width or new_head[1] >= grid_height:
+            print("Game Over!")
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and direction != 'down':
-                direction = 'up'
-            elif event.key == pygame.K_DOWN and direction != 'up':
-                direction = 'down'
-            elif event.key == pygame.K_LEFT and direction != 'right':
-                direction = 'left'
-            elif event.key == pygame.K_RIGHT and direction != 'left':
-                direction = 'right'
+            continue
 
-    # Déplacer le serpent
-    head_x, head_y = snake[0]
-    if direction == 'up':
-        new_head = (head_x, head_y - 1)
-    elif direction == 'down':
-        new_head = (head_x, head_y + 1)
-    elif direction == 'left':
-        new_head = (head_x - 1, head_y)
-    elif direction == 'right':
-        new_head = (head_x + 1, head_y)
+        snake.insert(0, new_head)
+        if new_head in apples:
+            apples.remove(new_head)
+            apples.extend(generate_apples(grid_width, grid_height, snake, apple_count - len(apples)))
+        else:
+            snake.pop()
 
-    # Vérifier les collisions
-    if new_head in snake or new_head[0] < 0 or new_head[1] < 0 or new_head[0] >= grid_width or new_head[1] >= grid_height:
-        print("Game Over!")
-        running = False
-        continue
+        screen.fill(BLACK)
+        draw_grid()
+        draw_snake(snake)
+        draw_apples(apples)
+        pygame.display.flip()
 
-    snake.insert(0, new_head)
-    if new_head == apple:
-        apple = generate_apple(grid_width, grid_height, snake)
-        is_eating = True  # Set eating flag when apple is eaten
-    else:
-        snake.pop()
-
-    screen.fill(BLACK)
-    draw_grid()
-    draw_snake(snake, is_eating)  # Pass eating flag to draw function
-    draw_apple(apple)
-    pygame.display.flip()
-    
-    # Reset eating flag after one frame
-    if is_eating:
-        is_eating = False
-
-    clock.tick(3)
+        clock.tick(game_speed)
 
 pygame.quit()
